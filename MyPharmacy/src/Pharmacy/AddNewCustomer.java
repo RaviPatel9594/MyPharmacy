@@ -1,9 +1,10 @@
 package Pharmacy;
 
 import static Pharmacy.Home.ps;
+import static Pharmacy.Home.rs;
 import java.awt.TextField;
 import java.sql.*;
-import java.sql.Date;
+import java.util.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -274,17 +275,30 @@ public class AddNewCustomer extends javax.swing.JFrame {
         
         StringBuffer sDate=new StringBuffer();
         sDate.append(D+"/"+M+"/"+Y);
+        java.util.Date util_date;
+        util_date = new java.util.Date(2000,1,1);
         try {
-            Date date=(Date) new SimpleDateFormat("dd/MM/yyyy").parse(sDate.toString());
+            util_date=(java.util.Date) new SimpleDateFormat("dd/MM/yyyy").parse(sDate.toString());
         } catch (ParseException ex) {
             Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        
+        java.sql.Date sql_date = new java.sql.Date(util_date.getTime());
+        
         try {
             conn=Home.connect();
             ps=conn.createStatement();
-        
-        rs=ps.executeQuery("insert into customerInfo values(?,?,?,?)");
+            int res;
+            res=ps.executeUpdate("insert into customerInfo values (null,'"+Name+"','"+Phone+"','"+sql_date+"','"+Address+"')");
+//            rs=ps.executeQuery("select *from customerInfo");
+//            while(rs.next())
+//            {
+//                System.out.println(rs.getString("Name")+" , "+rs.getString("Phone"));
+//            }
+            
+            
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
