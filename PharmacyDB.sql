@@ -3,28 +3,30 @@ create database PharmacyDB;
 use PharmacyDB;
 
 CREATE TABLE `CustomerInfo` (
-  `CustomerId` int primary key not null ,
+  `CustomerId` int primary key not null auto_increment,
   `Name` varchar(40) not null ,
   `Phone` int not null ,
   `Age` int,
   `PostalAddress` varchar(40)
 );
 
+alter table CustomerInfo
+add DOB date;
+
 CREATE TABLE `Invoice` (
-  `Id` int ,
+  `Id` int primary key not null auto_increment,
   `TimeStamp` datetime,
   `Mrp` float,
-  `DiscountedTotal` float,
-  primary key (Id)
+  `DiscountedTotal` float
 );
 
 CREATE TABLE `Admin` (
-  `username` varchar(40),
-  `Password` varchar(40)
+  `username` varchar(40) not null primary key ,
+  `Password` varchar(40) not null
 );
 
 CREATE TABLE `Medicines` (
-  `Id` int not null,
+  `Id` int not null primary key auto_increment,
   `Name` varchar(40) not null,
   `GenericName` varchar(40) not null,
   `Mrp` float not null,
@@ -37,8 +39,7 @@ CREATE TABLE `Medicines` (
   `StockAvailable` int,
   `Description` varchar(100),
   `Supplier` varchar(40),
-  `Discount` int,
-  primary key(id)
+  `Discount` int
 );
 
 CREATE TABLE `Contains` (
@@ -52,17 +53,9 @@ CREATE TABLE `Contains` (
 alter table invoice
 Add CustomerId int not null,
 ADD CONSTRAINT FK_InvoiceCustomerInfo
-FOREIGN KEY (CustomerId) REFERENCES CustomerInfo(CustomerId);
-
-select * from invoice;
-
-alter table invoice
-drop foreign key FK_InvoiceCustomerInfo;
-
-drop table invoice;
+FOREIGN KEY (CustomerId) REFERENCES CustomerInfo(CustomerId) on delete cascade;
 
 show tables ;
 
-alter table invoice
-ADD CONSTRAINT FK_InvoiceCustomerInfo
-FOREIGN KEY (CustomerId) REFERENCES CustomerInfo(CustomerId) on delete cascade;
+Insert into Medicines 
+values(4,'Taminophen','Taminophen',40,'2017-06-15','2017-06-15','Tablet',10,'5mg','Detol',58,'Nice Medicine','B&B',10);
