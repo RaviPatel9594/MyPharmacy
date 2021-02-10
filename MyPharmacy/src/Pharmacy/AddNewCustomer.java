@@ -1,5 +1,7 @@
 package Pharmacy;
 
+import static Pharmacy.Home.conn;
+//import static Pharmacy.Home.connect;
 import static Pharmacy.Home.ps;
 import static Pharmacy.Home.rs;
 import java.awt.TextField;
@@ -29,8 +31,23 @@ public class AddNewCustomer extends javax.swing.JFrame {
     /**
      * Creates new form AddNewCustomer
      */
+    public static void connect() throws ClassNotFoundException, SQLException
+    {
+//        Connection conn;
+        //Class.forName("conn.mysql.jdbc.Driver");
+        conn=(com.mysql.jdbc.Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","nikhil12");
+//        return conn;
+        
+    }
     public AddNewCustomer() {
         initComponents();
+        try {
+            connect();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -287,7 +304,7 @@ public class AddNewCustomer extends javax.swing.JFrame {
         java.sql.Date sql_date = new java.sql.Date(util_date.getTime());
         
         try {
-            conn=Home.connect();
+//            conn=Home.connect();
             ps=conn.createStatement();
             int res;
             res=ps.executeUpdate("insert into customerInfo values (null,'"+Name+"','"+Phone+"','"+sql_date+"','"+Address+"')");
@@ -299,8 +316,6 @@ public class AddNewCustomer extends javax.swing.JFrame {
             
             
             
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
         }

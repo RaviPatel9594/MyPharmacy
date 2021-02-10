@@ -2,14 +2,17 @@ package Pharmacy;
 
 
 import Pharmacy.AddNewCustomer;
+import static Pharmacy.Home.conn;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import com.sun.glass.events.KeyEvent;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 
@@ -28,15 +31,27 @@ public class Home extends javax.swing.JFrame {
     /**
      * Creates new form Home
      */
-    public Home() {
+    public Home() throws ClassNotFoundException, SQLException {
         initComponents();
+        connect();
         fillComboBox();
         AutoCompleteDecorator.decorate(MediComboBox);
     }
     
-    static Connection conn;
+    static Connection  conn;
     static Statement ps;
     static ResultSet rs;
+    DefaultTableModel df;
+
+    public static void connect() throws ClassNotFoundException, SQLException
+    {
+//        Connection conn;
+        //Class.forName("conn.mysql.jdbc.Driver");
+        conn=(Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","nikhil12");
+//        return conn;
+        
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -71,20 +86,21 @@ public class Home extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        InvoiceTable = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
-        jTextField8 = new javax.swing.JTextField();
+        AddButton = new javax.swing.JButton();
+        QtyTxt = new javax.swing.JTextField();
+        CodeTxt = new javax.swing.JTextField();
+        PriceTxt = new javax.swing.JTextField();
+        DiscountTxt = new javax.swing.JTextField();
         MediComboBox = new javax.swing.JComboBox<>();
         jTextField9 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1350, 800));
@@ -267,8 +283,8 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        InvoiceTable.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        InvoiceTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -276,14 +292,14 @@ public class Home extends javax.swing.JFrame {
                 "Code", "Name", "Price", "Quantity", "Discount", "Net Total"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setHeaderValue("Code");
-            jTable1.getColumnModel().getColumn(1).setHeaderValue("Name");
-            jTable1.getColumnModel().getColumn(2).setHeaderValue("Price");
-            jTable1.getColumnModel().getColumn(3).setHeaderValue("Quantity");
-            jTable1.getColumnModel().getColumn(4).setHeaderValue("Discount");
-            jTable1.getColumnModel().getColumn(5).setHeaderValue("Net Total");
+        jScrollPane1.setViewportView(InvoiceTable);
+        if (InvoiceTable.getColumnModel().getColumnCount() > 0) {
+            InvoiceTable.getColumnModel().getColumn(0).setHeaderValue("Code");
+            InvoiceTable.getColumnModel().getColumn(1).setHeaderValue("Name");
+            InvoiceTable.getColumnModel().getColumn(2).setHeaderValue("Price");
+            InvoiceTable.getColumnModel().getColumn(3).setHeaderValue("Quantity");
+            InvoiceTable.getColumnModel().getColumn(4).setHeaderValue("Discount");
+            InvoiceTable.getColumnModel().getColumn(5).setHeaderValue("Net Total");
         }
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -311,25 +327,47 @@ public class Home extends javax.swing.JFrame {
         jLabel14.setText("QTY");
         jLabel14.setPreferredSize(new java.awt.Dimension(1350, 800));
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jButton2.setText("ADD");
-        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        jTextField8.addActionListener(new java.awt.event.ActionListener() {
+        AddButton.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        AddButton.setText("ADD");
+        AddButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        AddButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField8ActionPerformed(evt);
+                AddButtonActionPerformed(evt);
             }
         });
 
+        DiscountTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DiscountTxtActionPerformed(evt);
+            }
+        });
+
+        MediComboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                MediComboBoxItemStateChanged(evt);
+            }
+        });
         MediComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MediComboBoxActionPerformed(evt);
+            }
+        });
+        MediComboBox.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                MediComboBoxKeyPressed(evt);
             }
         });
 
         jTextField9.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField9ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Undo");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -341,7 +379,9 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(41, 41, 41)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(33, 33, 33)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -350,30 +390,30 @@ public class Home extends javax.swing.JFrame {
                                 .addGap(9, 9, 9)
                                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(CodeTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(MediComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
-                            .addComponent(jTextField7))
+                            .addComponent(PriceTxt))
                         .addGap(24, 24, 24)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(QtyTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
-                            .addComponent(jTextField8))
+                            .addComponent(DiscountTxt))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(AddButton, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(336, Short.MAX_VALUE))
+                .addContainerGap(201, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
                     .addGap(719, 719, 719)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGap(720, 720, 720)))
         );
         jPanel2Layout.setVerticalGroup(
@@ -392,18 +432,20 @@ public class Home extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(CodeTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(PriceTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(QtyTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(DiscountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(MediComboBox))
                             .addGap(2, 2, 2))
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGap(4, 4, 4)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(AddButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
@@ -450,9 +492,9 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_CategoryButtonActionPerformed
 
-    private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
+    private void DiscountTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DiscountTxtActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField8ActionPerformed
+    }//GEN-LAST:event_DiscountTxtActionPerformed
 
     private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9ActionPerformed
         // TODO add your handling code here:
@@ -469,28 +511,88 @@ public class Home extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void mediData(){
+        try {
+            String mediName = MediComboBox.getSelectedItem().toString();
+//            conn=connect();
+            ps=conn.createStatement();
+            rs=ps.executeQuery("select * from medicines where name = '"+mediName+"'");
+            if(rs.next()){
+                CodeTxt.setText(rs.getString("id"));
+                PriceTxt.setText(rs.getString("Mrp"));
+                QtyTxt.setText(rs.getString("Quantity"));
+                DiscountTxt.setText(rs.getString("Discount"));
+                MediComboBox.removeAllItems();
+                fillComboBox();
+                MediComboBox.setSelectedItem(mediName);
+            }
+                
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     private void fillComboBox(){
         try {
             // TODO add your handling code here:
             String sqlQuery = "select * from Medicines";
-            conn=connect();
+//            conn=connect();
             ps=conn.createStatement();
             rs=ps.executeQuery(sqlQuery);
             
             while(rs.next()){
                 String medName = rs.getString("Name");
                 MediComboBox.addItem(medName);
+//                System.out.println(medName);
             }
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     private void MediComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MediComboBoxActionPerformed
-        
+        mediData();
+//        if(evt.getActionCommand() == KeyEvent.VK_ENTER){
+//        }
     }//GEN-LAST:event_MediComboBoxActionPerformed
+
+    
+    private void AddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddButtonActionPerformed
+        // TODO add your handling code here:
+        
+        int total = 0;
+        int price = Integer.parseInt(PriceTxt.getText());
+        int qty = Integer.parseInt(QtyTxt.getText());
+        total = price*qty;
+        
+        df = (DefaultTableModel)InvoiceTable.getModel();
+        df.addRow(new Object[]{
+            CodeTxt.getText(),
+            MediComboBox.getSelectedItem().toString(),
+            PriceTxt.getText(),
+            QtyTxt.getText(),
+            DiscountTxt.getText(),
+            total
+        });
+        
+    }//GEN-LAST:event_AddButtonActionPerformed
+
+    private void MediComboBoxKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_MediComboBoxKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MediComboBoxKeyPressed
+
+    private void MediComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_MediComboBoxItemStateChanged
+        // TODO add your handling code here:
+//        mediData();
+    }//GEN-LAST:event_MediComboBoxItemStateChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        int height = df.getRowCount();
+        if(height >= 1)
+            df.removeRow(height-1);
+        else
+            JOptionPane.showMessageDialog(null,"Successfully Updated.","Alert",JOptionPane.WARNING_MESSAGE);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -498,16 +600,9 @@ public class Home extends javax.swing.JFrame {
     
     
     
-    public static Connection connect() throws ClassNotFoundException, SQLException
-    {
-        Connection conn;
-        //Class.forName("conn.mysql.jdbc.Driver");
-        conn=(Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","nikhil12");
-        return conn;
-        
-    }
+    
 
-    public static void main(String args[])  {
+    public static void main(String args[]) throws ClassNotFoundException, SQLException  {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -535,7 +630,7 @@ public class Home extends javax.swing.JFrame {
         
         new Home().setVisible(true);
         try {
-            conn=connect();
+//            conn=connect();
             ps=conn.createStatement();
         
             rs=ps.executeQuery("select *from admin");
@@ -544,23 +639,25 @@ public class Home extends javax.swing.JFrame {
                 System.out.println(rs.getString("username")+" , "+rs.getString("Password"));
             }
         }
-        
-        catch (ClassNotFoundException ex) {
-            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
-        }
         catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AddButton;
     private javax.swing.JButton AddNewCustomerButton;
     private javax.swing.JButton CategoryButton;
+    private javax.swing.JTextField CodeTxt;
     private javax.swing.JButton CustomerButton;
     private javax.swing.JButton DSButton;
+    private javax.swing.JTextField DiscountTxt;
+    private javax.swing.JTable InvoiceTable;
     private javax.swing.JComboBox<String> MediComboBox;
+    private javax.swing.JTextField PriceTxt;
+    private javax.swing.JTextField QtyTxt;
     private javax.swing.JButton SupplierButton;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
@@ -581,15 +678,10 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
