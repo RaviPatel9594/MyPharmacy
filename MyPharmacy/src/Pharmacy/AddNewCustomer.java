@@ -13,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.*;
+import java.awt.Toolkit;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -25,29 +27,41 @@ import java.util.logging.Logger;
  */
 public class AddNewCustomer extends javax.swing.JFrame {
 
-    static Connection conn;
+
     static Statement ps;
     static ResultSet rs;
     /**
      * Creates new form AddNewCustomer
      */
-    public static void connect() throws ClassNotFoundException, SQLException
-    {
-//        Connection conn;
-        //Class.forName("conn.mysql.jdbc.Driver");
-        conn=(com.mysql.jdbc.Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","nikhil12");
-//        return conn;
+    
+    public AddNewCustomer() {
+        this.setUndecorated(false);
+        this.setResizable(true);
+        
+        initComponents();
+        Toolkit tk =Toolkit.getDefaultToolkit();
+        double xsize = tk.getScreenSize().getWidth();
+        double ysize=tk.getScreenSize().getHeight();
+        this.setSize((int)xsize*3/4 ,(int) ysize*3/4);
+        conn = Home.conn;
         
     }
-    public AddNewCustomer() {
-        initComponents();
-        try {
-            connect();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//    public static void connect() throws ClassNotFoundException, SQLException
+//    {
+////        Connection conn;
+//        //Class.forName("conn.mysql.jdbc.Driver");
+//        conn=(com.mysql.jdbc.Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","Ravi@471999");
+////        return conn;
+//        
+//    }
+    public void clearAllFields()
+    {
+        NameTxt.setText(null);
+        DTxt.setText(null);
+        MTxt.setText(null);
+        YTxt.setText(null);
+        PhoneTxt.setText(null);
+        AddressTxt.setText(null);
     }
 
     /**
@@ -248,7 +262,7 @@ public class AddNewCustomer extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(52, 52, 52)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -308,13 +322,10 @@ public class AddNewCustomer extends javax.swing.JFrame {
             ps=conn.createStatement();
             int res;
             res=ps.executeUpdate("insert into customerInfo values (null,'"+Name+"','"+Phone+"','"+sql_date+"','"+Address+"')");
-//            rs=ps.executeQuery("select *from customerInfo");
-//            while(rs.next())
-//            {
-//                System.out.println(rs.getString("Name")+" , "+rs.getString("Phone"));
-//            }
-            
-            
+            clearAllFields();
+            JFrame f;    
+            f=new JFrame();  
+            JOptionPane.showMessageDialog(f,"user added succesfully");
             
         } catch (SQLException ex) {
             Logger.getLogger(AddNewCustomer.class.getName()).log(Level.SEVERE, null, ex);
@@ -323,12 +334,8 @@ public class AddNewCustomer extends javax.swing.JFrame {
     }//GEN-LAST:event_AddButtonActionPerformed
 
     private void ClearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClearButtonActionPerformed
-        NameTxt.setText(null);
-        DTxt.setText(null);
-        MTxt.setText(null);
-        YTxt.setText(null);
-        PhoneTxt.setText(null);
-        AddressTxt.setText(null);
+
+        clearAllFields();
     }//GEN-LAST:event_ClearButtonActionPerformed
 
     private void BackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButtonActionPerformed

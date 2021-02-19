@@ -6,6 +6,7 @@ import static Pharmacy.Home.conn;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.sun.glass.events.KeyEvent;
+import java.awt.Toolkit;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.*;
@@ -32,7 +33,14 @@ public class Home extends javax.swing.JFrame {
      * Creates new form Home
      */
     public Home() throws ClassNotFoundException, SQLException {
+        this.setResizable(true);
         initComponents();
+        
+        Toolkit tk =Toolkit.getDefaultToolkit();
+        double xsize = tk.getScreenSize().getWidth();
+        double ysize=tk.getScreenSize().getHeight();
+        this.setSize((int)xsize*3/4 ,(int) ysize*3/4);
+        
         connect();
         fillComboBox();
         AutoCompleteDecorator.decorate(MediComboBox);
@@ -43,12 +51,12 @@ public class Home extends javax.swing.JFrame {
     static ResultSet rs;
     DefaultTableModel df;
 
-    public static void connect() throws ClassNotFoundException, SQLException
+    public static Connection connect() throws ClassNotFoundException, SQLException
     {
 //        Connection conn;
         //Class.forName("conn.mysql.jdbc.Driver");
-        conn=(Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","nikhil12");
-//        return conn;
+        conn=(Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","Ravi@471999");
+        return conn;
         
     }
     
@@ -128,6 +136,11 @@ public class Home extends javax.swing.JFrame {
         DSButton.setText("Daily Sales");
 
         CustomerButton.setText("Customer");
+        CustomerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CustomerButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -593,6 +606,11 @@ public class Home extends javax.swing.JFrame {
         else
             JOptionPane.showMessageDialog(null,"Successfully Updated.","Alert",JOptionPane.WARNING_MESSAGE);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void CustomerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CustomerButtonActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_CustomerButtonActionPerformed
 
     /**
      * @param args the command line arguments
