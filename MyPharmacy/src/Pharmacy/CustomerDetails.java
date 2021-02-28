@@ -5,7 +5,16 @@
  */
 package Pharmacy;
 
+import static Pharmacy.Home.conn;
+//import static Pharmacy.Home.ps;
 import java.awt.Toolkit;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -16,6 +25,8 @@ public class CustomerDetails extends javax.swing.JFrame {
     /**
      * Creates new form CustomerDetails
      */
+    
+    
     public CustomerDetails() {
         this.setResizable(true);
         initComponents();
@@ -24,9 +35,36 @@ public class CustomerDetails extends javax.swing.JFrame {
         double xsize = tk.getScreenSize().getWidth();
         double ysize=tk.getScreenSize().getHeight();
         this.setSize((int)xsize*3/4 ,(int) ysize*3/4);
-        
+        customerData();
+        conn = Home.conn;
     }
-
+    static Statement ps;
+    static ResultSet rs;
+    DefaultTableModel df;
+    private int dateToAge(String date){
+        String arr[] = date.split("-");
+        int currYear = Calendar.getInstance().get(Calendar.YEAR);
+        int birthYear = Integer.parseInt(arr[0]);
+        return (currYear-birthYear);
+    }
+    private void customerData(){
+        try {
+            ps=conn.createStatement();
+            rs=ps.executeQuery("Select * from customerinfo");
+            df = (DefaultTableModel)CustomerDetailTable.getModel();
+            while(rs.next()){
+                df.addRow(new Object[]{
+                    rs.getString("CustomerId"),
+                    rs.getString("Name"),
+                    String.valueOf(dateToAge(rs.getDate("DOB").toString())),
+                    rs.getString("Phone"),
+                    rs.getString("PostalAddress")
+                });
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CustomerDetails.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -38,7 +76,7 @@ public class CustomerDetails extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        CustomerDetailTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -46,7 +84,7 @@ public class CustomerDetails extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Customer Details");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        CustomerDetailTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -69,9 +107,9 @@ public class CustomerDetails extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        CustomerDetailTable.setColumnSelectionAllowed(true);
+        jScrollPane1.setViewportView(CustomerDetailTable);
+        CustomerDetailTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,8 +170,8 @@ public class CustomerDetails extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable CustomerDetailTable;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }

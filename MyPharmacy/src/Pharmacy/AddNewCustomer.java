@@ -46,14 +46,6 @@ public class AddNewCustomer extends javax.swing.JFrame {
         conn = Home.conn;
         
     }
-//    public static void connect() throws ClassNotFoundException, SQLException
-//    {
-////        Connection conn;
-//        //Class.forName("conn.mysql.jdbc.Driver");
-//        conn=(com.mysql.jdbc.Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","Ravi@471999");
-////        return conn;
-//        
-//    }
     public void clearAllFields()
     {
         NameTxt.setText(null);
