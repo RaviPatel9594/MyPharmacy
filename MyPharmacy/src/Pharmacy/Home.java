@@ -2,6 +2,7 @@ package Pharmacy;
 
 
 import Pharmacy.AddNewCustomer;
+import static Pharmacy.AddNewCustomer.ps;
 import static Pharmacy.Home.conn;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
@@ -63,6 +64,22 @@ public class Home extends javax.swing.JFrame {
         fillComboBox("customerinfo","Name",CustomerComboBox);
         AutoCompleteDecorator.decorate(MediComboBox);
         AutoCompleteDecorator.decorate(CustomerComboBox);
+        BillDateText.setText(java.time.LocalDate.now().toString());
+        ps=conn.createStatement();
+        
+        ResultSet res = ps.executeQuery("select max(id) as id from invoice");
+        String id="";
+        if(res.next())
+            id=res.getString("id");
+        if(id==null)
+        {
+            BillNoTxt.setText("1");
+        }
+        else
+        {
+            int currBillNo=Integer.parseInt(id)+1;
+            BillNoTxt.setText(Integer.toString(currBillNo));
+        }
     }
     
     static Connection  conn;
@@ -74,7 +91,7 @@ public class Home extends javax.swing.JFrame {
     {
 //        Connection conn;
         //Class.forName("conn.mysql.jdbc.Driver");
-        conn=(Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","nikhil12");
+        conn=(Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/pharmacydb?autoReconnect=true&useSSL=false","root","Ravi@471999");
         return conn;
         
     }
@@ -102,11 +119,11 @@ public class Home extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        BillNoTxt = new javax.swing.JTextField();
+        BillDateText = new javax.swing.JTextField();
         AddNewCustomerButton = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        OnHandTxt = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
@@ -128,10 +145,10 @@ public class Home extends javax.swing.JFrame {
         MediComboBox = new javax.swing.JComboBox<>();
         jTextField9 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        GetTotal = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
+        SubTotalTxt = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
@@ -232,6 +249,18 @@ public class Home extends javax.swing.JFrame {
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Customer Name");
 
+        BillNoTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BillNoTxtActionPerformed(evt);
+            }
+        });
+
+        BillDateText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BillDateTextActionPerformed(evt);
+            }
+        });
+
         AddNewCustomerButton.setFont(AddNewCustomerButton.getFont().deriveFont(AddNewCustomerButton.getFont().getStyle() | java.awt.Font.BOLD, AddNewCustomerButton.getFont().getSize()+5));
         AddNewCustomerButton.setText("Add New Customer");
         AddNewCustomerButton.addActionListener(new java.awt.event.ActionListener() {
@@ -248,7 +277,7 @@ public class Home extends javax.swing.JFrame {
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Item Type");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item", "Sub Item", "Whole Sale" }));
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -261,12 +290,12 @@ public class Home extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jTextField1)
+                    .addComponent(BillNoTxt)
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
+                    .addComponent(BillDateText, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -282,7 +311,7 @@ public class Home extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(OnHandTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
@@ -307,8 +336,8 @@ public class Home extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jComboBox1)
-                            .addComponent(jTextField3)
-                            .addComponent(jTextField1)
+                            .addComponent(BillDateText)
+                            .addComponent(BillNoTxt)
                             .addComponent(CustomerComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(21, 21, 21)
@@ -320,7 +349,7 @@ public class Home extends javax.swing.JFrame {
                                     .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(OnHandTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jComboBox2)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
@@ -417,11 +446,11 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Get Total");
-        jButton2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        GetTotal.setText("Get Total");
+        GetTotal.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        GetTotal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                GetTotalActionPerformed(evt);
             }
         });
 
@@ -429,7 +458,7 @@ public class Home extends javax.swing.JFrame {
 
         jLabel15.setText("Sub Total");
 
-        jLabel18.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        SubTotalTxt.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -438,7 +467,7 @@ public class Home extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(SubTotalTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
@@ -448,7 +477,7 @@ public class Home extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(SubTotalTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -495,7 +524,7 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel17)
                     .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -523,7 +552,7 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(GetTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -599,10 +628,10 @@ public class Home extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(GetTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
                 .addContainerGap())
@@ -681,6 +710,7 @@ public class Home extends javax.swing.JFrame {
                 PriceTxt.setText(rs.getString("Mrp"));
                 QtyTxt.setText(rs.getString("Quantity"));
                 DiscountTxt.setText(rs.getString("Discount"));
+                OnHandTxt.setText(rs.getString("StockAvailable"));
                 MediComboBox.removeAllItems();
                 fillComboBox("Medicines","Name", MediComboBox);
                 MediComboBox.setSelectedItem(mediName);
@@ -717,13 +747,24 @@ public class Home extends javax.swing.JFrame {
     
     private void AddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddButtonActionPerformed
         // TODO add your handling code here:
-        
+        int code=Integer.parseInt(CodeTxt.getText());
         int total = 0;
         int price = Integer.parseInt(PriceTxt.getText());
         int qty = Integer.parseInt(QtyTxt.getText());
         total = price*qty;
+        for(int i=0;i<InvoiceTable.getRowCount();i++)
+        {
+            if(code==Integer.parseInt(InvoiceTable.getValueAt(i, 0).toString()))
+            {
+                InvoiceTable.setValueAt(new Integer((Integer.parseInt(InvoiceTable.getValueAt(i, 3).toString())+qty)), i, 3);
+                InvoiceTable.setValueAt(new Integer((Integer.parseInt(InvoiceTable.getValueAt(i, 5).toString())+total)), i, 5);
+                return;
+            }
+        }
+        
         
         df = (DefaultTableModel)InvoiceTable.getModel();
+    
         df.addRow(new Object[]{
             CodeTxt.getText(),
             MediComboBox.getSelectedItem().toString(),
@@ -758,18 +799,89 @@ public class Home extends javax.swing.JFrame {
         new CustomerDetails().setVisible(true);
     }//GEN-LAST:event_CustomerButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void GetTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GetTotalActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+        addInvoiceData();
+    }//GEN-LAST:event_GetTotalActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void BillDateTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BillDateTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BillDateTextActionPerformed
+
+    private void BillNoTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BillNoTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BillNoTxtActionPerformed
+
     /**
      * @param args the command line arguments
      */
     
+    public void addInvoiceData()
+    {
+        float grandTotal=0;   
+        for(int row=0,col=5;row<InvoiceTable.getRowCount();row++)
+        {
+            grandTotal+=Float.parseFloat(InvoiceTable.getValueAt(row, col).toString());
+            System.out.println(grandTotal);
+            SubTotalTxt.setText(Float.toString(grandTotal));
+
+        }
+        String customerName = CustomerComboBox.getSelectedItem().toString();
+        int customerId=0;
+        try {
+            ps=conn.createStatement();
+            String q="select customerid from customerinfo where name='"+customerName+"'";
+            System.out.println(q);
+            ResultSet res = ps.executeQuery(q);
+            if(res.next())
+              customerId=Integer.parseInt(res.getString("customerid"));
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("customerId"+customerId);
+        try {
+            ps=conn.createStatement();
+            int res;
+            res=ps.executeUpdate("insert into Invoice(TimeStamp,mrp,discountedtotal,customerid) values ('"+java.time.LocalDateTime.now().toString()+"','"+grandTotal+"','"+grandTotal+"','"+customerId+"')");
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        int invoiceId=Integer.parseInt(BillNoTxt.getText());
+        
+        int code,quantity,discount;
+        String medName;
+        float price;
+        
+        for(int row=0,col=0;row<InvoiceTable.getRowCount();row++)
+        {
+            col=0;
+            code=Integer.parseInt(InvoiceTable.getValueAt(row, col++).toString());
+            medName=InvoiceTable.getValueAt(row, col++).toString();
+            price=Float.parseFloat(InvoiceTable.getValueAt(row, col++).toString());
+            quantity=Integer.parseInt(InvoiceTable.getValueAt(row, col++).toString());
+            discount=Integer.parseInt(InvoiceTable.getValueAt(row, col++).toString());
+            
+        
+            System.out.println(invoiceId+" "+code+" "+medName+" "+price+" "+quantity+" "+discount);    
+            try {
+                ps=conn.createStatement();
+                int res;
+                String Q="insert into InvoiceData values ('"+invoiceId+"','"+code+"','"+medName+"','"+price+"','"+quantity+"','"+discount+"')";
+                System.out.println("querry="+Q);
+                res=ps.executeUpdate(Q);
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        BillNoTxt.setText(Integer.toString(Integer.parseInt(BillNoTxt.getText())+1));
+        
+    }
     
     
     
@@ -819,19 +931,23 @@ public class Home extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AddButton;
     private javax.swing.JButton AddNewCustomerButton;
+    private javax.swing.JTextField BillDateText;
+    private javax.swing.JTextField BillNoTxt;
     private javax.swing.JButton CategoryButton;
     private javax.swing.JTextField CodeTxt;
     private javax.swing.JButton CustomerButton;
     private javax.swing.JComboBox<String> CustomerComboBox;
     private javax.swing.JButton DSButton;
     private javax.swing.JTextField DiscountTxt;
+    private javax.swing.JButton GetTotal;
     private javax.swing.JTable InvoiceTable;
     private javax.swing.JComboBox<String> MediComboBox;
+    private javax.swing.JTextField OnHandTxt;
     private javax.swing.JTextField PriceTxt;
     private javax.swing.JTextField QtyTxt;
+    private javax.swing.JLabel SubTotalTxt;
     private javax.swing.JButton SupplierButton;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
@@ -844,7 +960,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
@@ -862,9 +977,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField9;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables

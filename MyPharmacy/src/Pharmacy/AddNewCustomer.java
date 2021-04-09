@@ -39,6 +39,7 @@ public class AddNewCustomer extends javax.swing.JFrame {
         this.setResizable(true);
         
         initComponents();
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         Toolkit tk =Toolkit.getDefaultToolkit();
         double xsize = tk.getScreenSize().getWidth();
         double ysize=tk.getScreenSize().getHeight();
